@@ -12,22 +12,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SpringBootApplication
 @RestController
 @RequestMapping("/verification")
 public class VerificationController {
-    private final System.Logger logger = System.getLogger("Verification");
-
+    private final Logger logger = Logger.getLogger("Verification");
+    
     @Autowired
     private UserService userService;
 
-    //@ApiResponse(code = 200, message = "", response = User.class)
+
     @ApiOperation(value = "Returns a user given by the UUID")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/user")
     public User findUser(@RequestParam(value = "uniqueId") UUID uuid) {
-        logger.log(System.Logger.Level.INFO, String.format("Queried User with UUID: %s", uuid));
+        logger.log(Level.INFO, String.format("Queried User with UUID: %s", uuid));
         return userService.findUser(uuid);
     }
 
@@ -35,7 +37,7 @@ public class VerificationController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/users")
     public Collection<User> findUsersByStatus(@RequestParam(value = "status") User.STATUS status) {
-        logger.log(System.Logger.Level.INFO, String.format("Queried Users with Status: %s", status));
+        logger.log(Level.INFO, String.format("Queried Users with Status: %s", status));
         return userService.findUsersByStatus(status);
     }
 
@@ -45,11 +47,11 @@ public class VerificationController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object saveUser(@RequestBody User user, @RequestHeader(value = "auth") UUID token) {
         if (token == null || !token.toString().equals("3efac26d-e737-48d3-8671-45ad7cb4d119")) {
-            logger.log(System.Logger.Level.INFO, "Request not authorized.");
+            logger.log(Level.INFO, "Request not authorized.");
             return HttpStatus.UNAUTHORIZED;
         }
         userService.saveUser(user);
-        logger.log(System.Logger.Level.INFO, String.format("Saved User with UUID: %s", user.getUuid()));
+        logger.log(Level.INFO, String.format("Saved User with UUID: %s", user.getUuid()));
         return user;
     }
 
@@ -57,15 +59,15 @@ public class VerificationController {
     @DeleteMapping(value = "/user")
     public HttpStatus removeUser(@RequestParam(value = "uniqueId") UUID uuid, @RequestHeader(value = "auth") UUID token) {
         if (!token.toString().equals("3efac26d-e737-48d3-8671-45ad7cb4d119")) {
-            logger.log(System.Logger.Level.INFO, "Request not authorized.");
+            logger.log(Level.INFO, "Request not authorized.");
             return HttpStatus.UNAUTHORIZED;
         }
         if (userService.findUser(uuid) == null) {
-            logger.log(System.Logger.Level.INFO, String.format("User with UUID: %s not found.", uuid));
+            logger.log(Level.INFO, String.format("User with UUID: %s not found.", uuid));
             return HttpStatus.NOT_FOUND;
         }
         userService.remove(uuid);
-        logger.log(System.Logger.Level.INFO, String.format("Deleted User with UUID: %s", uuid));
+        logger.log(Level.INFO, String.format("Deleted User with UUID: %s", uuid));
         return HttpStatus.OK;
     }
 }

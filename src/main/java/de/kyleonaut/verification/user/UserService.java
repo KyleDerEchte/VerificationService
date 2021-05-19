@@ -3,7 +3,7 @@ package de.kyleonaut.verification.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 @Service
@@ -20,8 +20,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public List<User> findUsersByStatus(User.STATUS status) {
-        return List.copyOf(userRepository.findAllByStatus(status));
+    public Collection<User> findUsersByStatus(User.STATUS status) {
+        return userRepository.findAllByStatus(status);
     }
 
     public void remove(UUID uuid) {
